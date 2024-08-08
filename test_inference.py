@@ -8,7 +8,9 @@ import string
 
 class tools:
     def search_cam(max_ports=10):
-        '''u can always use this as a debugging'''
+        '''only use this as a debugging/
+            running this everytime is not recommended.'''
+        print('[LOG]: searching cam ports')
         available_ports = []
         for port in range(max_ports):
             camera = cv2.VideoCapture(port)
@@ -18,12 +20,14 @@ class tools:
         return available_ports
     
     def current_time():
+        '''returns current yyyymmddhhmmss in string'''
         now = datetime.now()
         year_month_time = now.strftime("%Y%m%d%H%M%S")
         
-        return year_month_time
+        return str(year_month_time)
     
     def fingerprint():
+        '''return random string composed of 8 characters randomly selected from a-z, 0-9'''
         characters = string.ascii_lowercase + string.digits
         random_string = ''.join(random.choice(characters) for _ in range(8))
         return random_string
@@ -32,8 +36,9 @@ class tools:
 
 class bucket:
     cam = None
-
     frame = None
+    
+    
 
     # times
     function_start_time = None
@@ -43,35 +48,29 @@ class bucket:
 
 
 class initialize:
-    def init():
-        # initialize servercom plugin   
-        print('intiializing communication')     
+    def init(debugging, camPort = 0):
+        '''initialize the code'''
+        # initialize servercom plugin
         serverCom.initializer.__init__(
                                         os.getcwd(),
                                        'gen-lang-client-0521940196-1f1db2e46768',
                                        '1mTU6uOBwlx7VCEKP-Y038Ucm8aLXnpeToN1ddxqGCe4',
                                        '1NPciFwLIoW_ysdBg3ObeXRN4QvJBMXBl'
                                        )
-        print('connection established!')
 
         # initialize camera
-        print('initiating camera')
-        print('searching for available camera ports')
-        # cam_ports = tools.search_cam()
-        # cam_ports = cam_ports[0]
-        # print(f'using {cam_ports} as a camera port')
-        bucket.cam = cv2.VideoCapture(0)
-        print('camera captured')
-
-        print('\ninitialization complete\n')
-
-
+        if debugging:
+            cam_ports = tools.search_cam() # search cam port
+            bucket.cam = cv2.VideoCapture(cam_ports[0]) # use the first cam port in existence.
+        else:
+            bucket.cam = cv2.VideoCapture(camPort)
+        print('\ninitialization done\n')
 
 class main:
     def check_changes():
         None
 
-    def test(): # capture frame -> upload -> inference
+    def test(): # capture frame -> upload -> inference -> access data
         bucket.function_start_time = time.time() # initiaiting time in sec
         
         # take picture and save it in jpg
