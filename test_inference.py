@@ -39,7 +39,7 @@ class bucket:
     function_start_time = None
     google_start_time = None
 
-    google_result_time = []
+    google_result_time = {'uplaod time':0.0, 'inference time': 0.0} # drive time, inference time, 
 
 
 class initialize:
@@ -92,7 +92,7 @@ class main:
 
         
 
-        drive_upload_time = google_drive_end_time-google_drive_start_time
+        bucket.google_result_time.append(google_drive_end_time-google_drive_start_time)
         
 
 
