@@ -1,3 +1,6 @@
 
 /.creds
 serverCom.py
+/.imgs
+colab/.DS_Store
+.DS_Store

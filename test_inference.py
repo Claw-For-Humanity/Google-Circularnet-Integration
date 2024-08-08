@@ -57,10 +57,10 @@ class initialize:
         # initialize camera
         print('initiating camera')
         print('searching for available camera ports')
-        cam_ports = tools.search_cam()
-        cam_ports = cam_ports[0]
-        print(f'using {cam_ports} as a camera port')
-        bucket.cam = cv2.VideoCapture(cam_ports)
+        # cam_ports = tools.search_cam()
+        # cam_ports = cam_ports[0]
+        # print(f'using {cam_ports} as a camera port')
+        bucket.cam = cv2.VideoCapture(0)
         print('camera captured')
 
         print('\ninitialization complete\n')
@@ -75,15 +75,20 @@ class main:
         bucket.function_start_time = time.time() # initiaiting time in sec
         
         # take picture and save it in jpg
+        time.sleep(5)
         r, bucket.frame = bucket.cam.read()
         img_name = f'frame_{tools.fingerprint()}.jpg'
-        cv2.imwrite(img_name, bucket.frame)
+        target = os.path.join(os.getcwd(),'.imgs', img_name)
+        cv2.imwrite(target, bucket.frame)
 
         # upload to g drive
         bucket.google_start_time = time.time()
         google_drive_start_time = time.time()
         serverCom.uploader.photo(img_name, img_name)
         google_drive_end_time = time.time()
+
+
+        print('everything completed')
 
         # while resolving,
         # keep looking for changes in gspread
@@ -92,7 +97,7 @@ class main:
 
         
 
-        bucket.google_result_time.append(google_drive_end_time-google_drive_start_time)
+        # bucket.google_result_time.append(google_drive_end_time-google_drive_start_time)
         
 
 
@@ -102,5 +107,5 @@ class main:
 
 
 
-
-print(tools.fingerprint())
+initialize.init()
+main.test()
