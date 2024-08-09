@@ -6,6 +6,7 @@ from datetime import datetime
 import random
 import string
 import sys
+sys.path.append('/Users/changbeankang/Claw_For_Humanity/HOS_II/plugins/fingerprint')
 from fingerprint import main as fingerprint
 
 sys.path.append('/Users/changbeankang/Claw_For_Humanity/HOS_II/FastSAM-main/')
@@ -91,7 +92,7 @@ class main:
 
         everything_result = single_segpred.main.inference(target, False, debugging = True)
         
-        fastSam = single_segpred.main.annotate(everything_result,True,img, debugging = True)
+        fastSam = single_segpred.main.annotate(everything_result, True, img, debugging = True)
 
 
         print(f'fastsam output is {fastSam}')
