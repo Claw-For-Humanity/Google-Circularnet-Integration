@@ -5,6 +5,12 @@ import cv2
 from datetime import datetime
 import random
 import string
+import sys
+from fingerprint import main as fingerprint
+
+sys.path.append('/Users/changbeankang/Claw_For_Humanity/HOS_II/FastSAM-main/')
+import single_segpred
+
 
 class tools:
     def search_cam(max_ports=10):
@@ -26,11 +32,7 @@ class tools:
         
         return str(year_month_time)
     
-    def fingerprint():
-        '''return random string composed of 8 characters randomly selected from a-z, 0-9'''
-        characters = string.ascii_lowercase + string.digits
-        random_string = ''.join(random.choice(characters) for _ in range(8))
-        return random_string
+    
 
 
 
@@ -38,6 +40,7 @@ class bucket:
     cam = None
     frame = None
     
+    waiting_list = [] # waiting list for detected objects
     
 
     # times
@@ -48,8 +51,9 @@ class bucket:
 
 
 class initialize:
-    def init(debugging, camPort = 0):
+    def init(search_cam, camPort = 0):
         '''initialize the code'''
+    # initialize server com
         # initialize servercom plugin
         serverCom.initializer.__init__(
                                         os.getcwd(),
@@ -59,16 +63,46 @@ class initialize:
                                        )
 
         # initialize camera
-        if debugging:
+        if search_cam:
             cam_ports = tools.search_cam() # search cam port
             bucket.cam = cv2.VideoCapture(cam_ports[0]) # use the first cam port in existence.
         else:
             bucket.cam = cv2.VideoCapture(camPort)
+        
+    # initialize fastsam
+        single_segpred.initialize.init()
+
+
         print('\ninitialization done\n')
 
 class main:
-    def check_changes():
+    def main():
+        ''' fastsam -> crop -> upload
+            circularnet inference
+            retrieve info from gs
+           '''
+        time.sleep(3)
+        r, bucket.frame = bucket.cam.read()
+        img_name = f'{fingerprint.generate()}.jpg'
+        target = os.path.join(os.getcwd(),'.imgs', img_name)
+        cv2.imwrite(target, bucket.frame)
+        
+        img = cv2.imread(target)
+
+        everything_result = single_segpred.main.inference(target, False, debugging = True)
+        
+        fastSam = single_segpred.main.annotate(everything_result,True,img, debugging = True)
+
+
+        print(f'fastsam output is {fastSam}')
+
+
+        return None
+
+
+    def cropping():
         None
+
 
     def test(): # capture frame -> upload -> inference -> access data
         bucket.function_start_time = time.time() # initiaiting time in sec
@@ -76,7 +110,7 @@ class main:
         # take picture and save it in jpg
         time.sleep(5)
         r, bucket.frame = bucket.cam.read()
-        img_name = f'frame_{tools.fingerprint()}.jpg'
+        img_name = f'frame_{fingerprint.generate()}.jpg'
         target = os.path.join(os.getcwd(),'.imgs', img_name)
         cv2.imwrite(target, bucket.frame)
 
@@ -106,5 +140,5 @@ class main:
 
 
 
-initialize.init()
-main.test()
+initialize.init(False)
+main.main()
